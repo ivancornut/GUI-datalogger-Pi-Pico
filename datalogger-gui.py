@@ -55,8 +55,10 @@ def update_time():
     root.after(1000, update_time)
 
 def display_device_time():
-    current_time = time.strftime('%H:%M:%S')
-    time_label_dev.config(text=current_time)
+    command = "mpremote run read_rtc_time.py"
+    result = subprocess.run(command, shell=True, capture_output=True, text=True)
+    #current_time = time.strftime('%H:%M:%S')
+    time_label_dev.config(text=result)
     root.after(3000, hide_time)
 
 def hide_time():
