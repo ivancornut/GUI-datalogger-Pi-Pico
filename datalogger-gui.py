@@ -3,6 +3,14 @@ from tkinter import filedialog, Listbox, Scrollbar, messagebox
 import subprocess
 import os
 import time
+import re
+
+def extract_numbers_from_string(s):
+    # Use regex to find all numbers (integers and floats) in the string
+    numbers = re.findall(r'\d+\.?\d*', s)
+    # Convert the extracted strings to floats
+    numbers = list(map(float, numbers))
+    return numbers
 
 def save_file():
     file_path = filedialog.asksaveasfilename(defaultextension=".txt",
@@ -13,15 +21,18 @@ def save_file():
         print(f"Data saved to {file_path}")
 
 def run_command():
-
     command = "mpremote connect auto run read_sd.py fs ls sd/"  # Replace with your bash command
     result = subprocess.run(command, shell=True, capture_output=True, text=True)
     # Clear the previous output
     output_listbox.delete(0, tk.END)
-
-    # Insert each line of the output into the listbox
-    for line in result.stdout.splitlines():
-        output_listbox.insert(tk.END, line.split()[-1])
+    if result.stderr=="" and result.stdout != "":
+        # Insert each line of the output into the listbox
+        for line in result.stdout.splitlines():
+            output_listbox.insert(tk.END, line.split()[-1])
+    else:
+        files_dev_label.config(text=result.stderr)
+        root.after(3000,hide_file_status)
+        print(result.stderr)
 
 def save_selected():
     selected_indices = output_listbox.curselection()
@@ -58,11 +69,38 @@ def display_device_time():
     command = "mpremote run read_rtc_time.py"
     result = subprocess.run(command, shell=True, capture_output=True, text=True)
     #current_time = time.strftime('%H:%M:%S')
-    time_label_dev.config(text=result)
+    numbers_list = extract_numbers_from_string(result.stdout)
+    seconds = int(numbers_list[-1])
+    minutes = int(numbers_list[-2])
+    hours = int(numbers_list[-3])
+    if time=="":
+        time_label_dev.config(text="No device connected")
+    else:
+        time_label_dev.config(text=f"{hours}:{minutes}:{seconds}")
     root.after(3000, hide_time)
 
+def set_device_time():
+    command1= "mpremote rtc --set"
+    command2 = "mpremote run set_rtc_time.py"
+    subprocess.run(command1, shell=True, capture_output=True, text=True)
+    result = subprocess.run(command2, shell=True, capture_output=True, text=True)
+    if result.stderr =="":
+        set_time_dev_label.config(text="Done updating device time")
+        root.after(5000,hide_device_rtc_status)
+    elif result.stderr =='mpremote: no device found\n':
+        set_time_dev_label.config(text="No device found")
+        root.after(5000,hide_device_rtc_status)
+    else:
+        set_time_dev_label.config(text=result.stderr)
+        root.after(5000,hide_device_rtc_status)
+    
 def hide_time():
-        time_label_dev.config(text="--:--:--")
+    time_label_dev.config(text="--:--:--")
+def hide_device_rtc_status():
+    set_time_dev_label.config(text="")
+def hide_file_status():
+    files_dev_label.config(text="")
+
 
 
 # Create the main window
@@ -84,15 +122,23 @@ time_button.pack(pady = (5, 0))
 time_label_dev = tk.Label(root, text="--:--:--", font=("Helvetica", 16))
 time_label_dev.pack(pady = (5, 20))
 
-
+# Create a button to update the time
+set_time_button = tk.Button(root, text="Set device Time", command=set_device_time)
+set_time_button.pack(pady = (5, 0))
+# Create a label to display the time
+set_time_dev_label = tk.Label(root, text="", font=("Helvetica", 16))
+set_time_dev_label.pack(pady = (5, 20))
 
 # Create a button to save the file
-save_button = tk.Button(root, text="Save File", command=save_file)
-save_button.pack(pady=20)
+#save_button = tk.Button(root, text="Save File", command=save_file)
+#save_button.pack(pady=20)
 
 # Create a button to run the command
 run_button = tk.Button(root, text="See Files on datalogger", command=run_command)
-run_button.pack(pady=20)
+run_button.pack(pady = (5, 0))
+# label to display the status of seeing the files on the datalogger
+files_dev_label = tk.Label(root, text="", font=("Helvetica", 10))
+files_dev_label.pack(pady = (5, 20))
 
 # Create a button to save the selected item
 save_selected_button = tk.Button(root, text="Download selected file", command=save_selected)
