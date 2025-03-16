@@ -1,0 +1,23 @@
+from machine import ADC, UART
+import utime
+AnalogIn = ADC(4)
+Conv = 3.3 / 65535
+# ADC channel 4
+# Conversion factor
+uart = UART(0, 9600)
+while True:
+     # Do forever
+    V = AnalogIn.read_u16()
+     # Read temp
+    V = V * Conv
+     # Convert to Volts
+    Temp = 27 - (V - 0.706) / 0.001721
+     # Convert to temp
+    Tempstr = str(Temp)
+     # Convert to string
+    uart.write(Tempstr[:5])
+     # Send to UART
+    uart.write(" Degrees C\n")
+    print(Tempstr)
+    utime.sleep(10)
+    # Wait 10 seconds
