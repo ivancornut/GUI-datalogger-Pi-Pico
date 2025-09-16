@@ -55,8 +55,9 @@ def get_sd_files():
         lines = result.stdout.strip().split('\n')
         for line in lines:
             line = line.strip()
-            line = line.split()[1]
-            print(line)
+            #line = line.split()
+            #filesize = line[0]
+            #line = line[1]
             if line and not line.startswith('ls :') and line != ':sd/':
                 # Remove directory prefix if present
                 if line.startswith('sd/'):
@@ -100,6 +101,7 @@ def download_selected_files():
         if filename in ["No device found", "No files found on SD card", "Error reading SD card"]:
             continue
         print(filename)
+        filename = filename.split()[1] # get only the filename and not the size
         try:
             # Download file using mpremote
             result = subprocess.run(f'mpremote run read_sd.py cp :sd/{filename} data/{filename}',capture_output=True, text=True,timeout=30, shell=True)
