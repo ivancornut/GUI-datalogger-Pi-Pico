@@ -344,7 +344,7 @@ def generate_and_save_to_device():
 
 # Create main window
 root = tk.Tk()
-root.title("Sensor Device JSON Generator")
+root.title("Datalogger management tool")
 root.geometry("750x600")
 
 # Create import button at the top left
