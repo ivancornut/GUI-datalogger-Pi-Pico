@@ -13,9 +13,17 @@
 ## Installation on a debian system
 The best for this datalogger GUI is to use a debian system. 
 To install the mpremote tool (the tool that allows your computer to communicate with your micropython device.
+Open your terminal, go to the directory in which you wish to install and type: 
 ```
+git clone https://github.com/ivancornut/GUI-datalogger-Pi-Pico.git
 pip install mpremote
 ```
+Then to create the data directory where your data files will be saved: 
+```
+cd GUI-datalogger-Pi-Pico
+mkdir data
+```
+
 ### Creation of a desktop icon
 To make it easier for non technical people to use the tool you can install a clickable icon on the desktop that will launch the application.
 To do this create a file: 
