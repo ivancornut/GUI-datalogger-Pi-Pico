@@ -7,7 +7,7 @@
   * [Installation on a macos system](#installation-on-a-mac)
 
 ## General presentation
-<img width="758" height="644" alt="image" src="https://github.com/user-attachments/assets/6f7a00f6-389b-4f43-8199-4f0c8f5063ab" />
+<img width="758" height="644" alt="image" src="https://github.com/user-attachments/assets/77d4a50a-12df-4bc4-b433-eb26c0897913" />
 
 
 ## Installation on a debian system
