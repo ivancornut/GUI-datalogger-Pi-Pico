@@ -14,6 +14,14 @@ def update_computer_time():
     # Schedule next update in 1000ms (1 second)
     root.after(1000, update_computer_time)
 
+def soft_reset_device():
+    result = subprocess.run('mpremote soft-reset', capture_output=True, text=True, timeout=10, shell=True)
+    if "no device found" in result.stdout:
+        print("No device found")
+        root.after(1000, soft_reset_device)
+    else:
+        print("Device soft reset ready to work")
+
 def get_device_time():
     """Get and display the time from the device"""
     result = subprocess.run('mpremote run read_rtc_time.py', 
@@ -455,6 +463,9 @@ root.grid_columnconfigure(4, weight=0)  # Scrollbar column
 
 # Start updating computer time
 update_computer_time()
+
+# Execute until a device is there to soft reset
+soft_reset_device()
 
 # Start the GUI event loop
 root.mainloop()
